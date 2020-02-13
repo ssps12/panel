@@ -242,7 +242,7 @@ class ServableMixin(object):
             self.server_doc(title=title)
         return self
 
-    def show(self, port=0, websocket_origin=None, threaded=False, title=None, **kwargs):
+    def show(self, title=None, port=0, websocket_origin=None, threaded=False, **kwargs):
         """
         Starts a Bokeh server and displays the Viewable in a new tab.
 
