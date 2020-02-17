@@ -15,7 +15,7 @@ addons:
   apt:
     packages:
     - libglu1-mesa
-
+    - xvfb
 env:
   global:
     - PYENV_VERSION=3.7
@@ -63,7 +63,7 @@ jobs:
         - doit env_create $CHANS_DEV --python=$PYTHON_VERSION
         - source activate test-environment
         - conda install -c conda-forge mesalib
-        - travis_wait 20 doit develop_install -o recommended -o tests -o build $CHANS_DEV
+        - doit develop_install -o recommended -o tests -o build $CHANS_DEV
         - bokeh sampledata
         - doit env_capture
       before_script:
@@ -76,6 +76,41 @@ jobs:
 
     - <<: *conda_default
       env: DESC="py2 tests" PYTHON_VERSION=2.7
+      
+    - <<: *conda_default
+      arch: arm64
+      stage: test
+      env: DESC="dev test_all" PYTHON_VERSION=3.7
+      before_install:
+        # Installing python3.7 as by default travis don't have python3.7
+        - sudo add-apt-repository "deb http://ports.ubuntu.com/ubuntu-ports/  eoan main universe"
+        - sudo apt-get update
+        - sudo apt-get install python3.7
+        - sudo apt-get install python3-pip
+        # install doit/pyctdev and archiconda...
+        - sudo python3.7 -m pip install pyctdev
+        - wget "https://github.com/Archiconda/build-tools/releases/download/0.2.3/Archiconda3-0.2.3-Linux-aarch64.sh" -O archiconda.sh
+        - chmod +x archiconda.sh
+        - bash archiconda.sh -b -p $HOME/miniconda
+        - export PATH="$HOME/miniconda/bin:$PATH" && hash -r
+        # Creating link to use conda for sudo user as arm64 requires root permisson to trigger/execute test
+        # We will execute all tests with sudo
+        - sudo ln -s $HOME/miniconda/bin/conda /usr/bin/
+        - sudo conda config --set always_yes True
+        - sudo doit ecosystem_setup
+      install:
+        # Creating conda environmet and installing required packages as doit failing to resolve dependency for arm64
+        - sudo conda create -n test-environment python=$PYTHON_VERSION
+        - source activate test-environment
+        - sudo conda install -c conda-forge panel pytest-cov codecov vega_datasets hvplot altair streamz
+        - sudo conda install -c programfan scikit-image 
+        - sudo conda install -c numba -c pyviz datashader
+        - sudo conda install -c bokeh jupyter_bokeh
+        - sudo conda install -c anaconda nbsmoke flake8 pytest jupyter_client scikit-learn
+        - sudo conda install -c plotly plotly
+        - bokeh sampledata
+        - sudo doit env_capture
+      script: sudo "PATH=$PATH" doit test_all_recommended
 
     ########## END-USER PACKAGES ##########
 
