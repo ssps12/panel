@@ -103,8 +103,8 @@ jobs:
         - sudo conda create -n test-environment python=$PYTHON_VERSION
         - source activate test-environment
         - sudo apt-get install libhdf5-serial-dev netcdf-bin libnetcdf-dev
-        #- sudo pip install netCDF4
-        - sudo conda install -c rpi netcdf4
+        - sudo pip install netCDF4
+        #- sudo conda install -c rpi netcdf4
         - sudo conda install -c conda-forge vtki
         - sudo conda install -c conda-forge meshio
         - sudo conda install -c conda-forge pyvista
