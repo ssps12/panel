@@ -102,6 +102,7 @@ jobs:
         # Creating conda environmet and installing required packages as doit failing to resolve dependency for arm64
         - sudo conda create -n test-environment python=$PYTHON_VERSION
         - source activate test-environment
+        - sudo conda install -c conda-forge pyvista
         - sudo conda install -c conda-forge panel pytest-cov codecov vega_datasets hvplot altair streamz
         - sudo conda install -c programfan scikit-image 
         - sudo conda install -c numba -c pyviz datashader
