@@ -102,6 +102,7 @@ jobs:
         # Creating conda environmet and installing required packages as doit failing to resolve dependency for arm64
         - sudo conda create -n test-environment python=$PYTHON_VERSION
         - source activate test-environment
+        - sudo pip install pyvista
         - sudo apt-get install libhdf5-serial-dev netcdf-bin libnetcdf-dev
         - sudo pip install netCDF4
         - sudo pip install vtk
